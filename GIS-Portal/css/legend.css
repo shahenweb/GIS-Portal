@@ -1,0 +1,103 @@
+/* =====================================================
+   Legend Panel
+===================================================== */
+
+
+#legend-panel {
+
+    background: white;
+
+    border-right: 1px solid #cccccc;
+
+}
+
+
+/* Panel Header */
+
+.panel-title {
+
+    height: 45px;
+
+    display:flex;
+
+    align-items:center;
+
+    padding-left:15px;
+
+    font-weight:bold;
+
+    border-bottom:1px solid #ddd;
+
+}
+
+
+/* Legend Items */
+
+.legend-content {
+
+    padding:15px;
+
+}
+
+
+.legend-item {
+
+    display:flex;
+
+    align-items:center;
+
+    gap:10px;
+
+    margin-bottom:15px;
+
+}
+
+
+/* Symbols */
+
+.legend-symbol {
+
+    width:20px;
+
+    height:20px;
+
+    display:inline-block;
+
+}
+
+
+/* Polygon */
+
+.polygon {
+
+    background:#3388ff;
+
+    border:1px solid #3388ff;
+
+}
+
+
+.line {
+
+    height:3px;
+
+    background:#ff6600;
+
+}
+.raster {
+
+    width:20px;
+
+    height:20px;
+
+    display:inline-block;
+
+    background-image:url("../data/raster/1.png");
+
+    background-size:cover;
+
+    background-position:center;
+
+    border:1px solid #999;
+
+}

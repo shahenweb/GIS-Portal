@@ -1,0 +1,52 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "پلان شماره 1",
+        "description": "این یک نمونه پلان است",
+        "type": "مسکونی",
+        "area": "5000 متر مربع"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [51.3890, 35.6892]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "پلان شماره 2",
+        "description": "پلان تجاری",
+        "type": "تجاری",
+        "area": "3000 متر مربع"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [51.4000, 35.7000]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "منطقه سبز",
+        "description": "منطقه پارک و فضای سبز",
+        "type": "پارک",
+        "area": "10000 متر مربع"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [51.3800, 35.6800],
+            [51.3900, 35.6800],
+            [51.3900, 35.6900],
+            [51.3800, 35.6900],
+            [51.3800, 35.6800]
+          ]
+        ]
+      }
+    }
+  ]
+}
