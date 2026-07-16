@@ -1,2 +1,2 @@
-# urban-GIS-portal
-Urban GIS Portal for interactive maps and spatial analysis
+# GIS-Portal
+GIS Portal for interactive maps and spatial analysis
