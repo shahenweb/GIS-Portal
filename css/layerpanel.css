@@ -1,0 +1,31 @@
+/* =================================
+   Layer Panel
+================================= */
+
+#layer-panel{
+
+    background:rgba(255,255,255,0.75);
+
+    backdrop-filter:blur(12px);
+
+    border-radius:12px;
+
+    box-shadow:0 8px 20px rgba(0,0,0,.20);
+
+}
+
+
+.layer-item{
+
+    padding:8px;
+
+    border-bottom:1px solid rgba(0,0,0,.1);
+
+}
+
+
+.layer-item input{
+
+    margin-left:8px;
+
+}
