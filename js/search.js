@@ -1,169 +1,218 @@
 /*
 =====================================================
- GIS Portal v0.2.0
- Search Module
- Search by PD_NR
+ GIS Portal v2.0
+ Search Engine
 =====================================================
 */
 
 
-let searchMarker = null;
-
-let selectedDistrict = null;
+function initializeSearch(){
 
 
-
-function searchDistrict(){
-
-
-const input =
-document.getElementById("search-input");
+    const input = 
+    document.getElementById("search-input");
 
 
-let searchValue =
-input.value.trim();
+    const results =
+    document.getElementById("search-results");
 
 
 
-if(searchValue===""){
+    if(!input || !results){
 
-    return;
-
-}
-
-
-
-let districtLayer =
-GIS_LAYERS.districts;
-
-
-
-let found = false;
-
-
-
-districtLayer.eachLayer(
-
-function(layer){
-
-
-
-let pdNumber =
-layer.feature.properties.PD_NR;
-
-
-
-
-if(String(pdNumber) === searchValue){
-
-
-
-    found = true;
-
-
-
-    /*
-    Zoom to district
-    */
-
-
-    map.fitBounds(
-        layer.getBounds(),
-        {
-            padding:[50,50]
-        }
-    );
-
-
-
-
-    /*
-    Open Popup
-    */
-
-
-    layer.openPopup();
-
-
-
-
-    /*
-    Highlight Boundary
-    */
-
-
-    if(selectedDistrict){
-
-        selectedDistrict.setStyle({
-
-            color:"#3388ff",
-
-            weight:2,
-
-            fillOpacity:0.1
-
-        });
+        return;
 
     }
 
 
 
+    input.addEventListener("input",function(){
 
-    layer.setStyle({
 
-        color:"red",
+        let value =
+        this.value.trim().toLowerCase();
 
-        weight:4,
 
-        fillOpacity:0.25
+
+        results.innerHTML="";
+
+
+
+        if(value===""){
+
+
+            results.style.display="none";
+
+            return;
+
+        }
+
+
+
+        let matches=[];
+
+
+
+        Object.keys(LAYER_CONFIG).forEach(function(key){
+
+
+            let layer =
+            LAYER_CONFIG[key];
+
+
+
+            if(layer.searchable === true){
+
+
+
+                let text =
+
+                layer.name.toLowerCase()
+                +
+                " "
+                +
+                (layer.keywords || [])
+                .join(" ")
+                .toLowerCase();
+
+
+
+                if(text.includes(value)){
+
+
+                    matches.push(layer);
+
+                }
+
+
+            }
+
+
+        });
+
+
+
+        if(matches.length===0){
+
+
+            results.style.display="none";
+
+            return;
+
+        }
+
+
+
+        matches.forEach(function(layer){
+
+
+    let div =
+    document.createElement("div");
+
+
+    div.className="search-item";
+
+
+   let icon = "🗺";
+
+
+if(layer.geometry === "polygon"){
+
+    icon = "🏘";
+
+}
+
+else if(layer.geometry === "line"){
+
+    icon = "🛣";
+
+}
+
+else if(layer.geometry === "raster"){
+
+    icon = "🖼";
+
+}
+
+
+
+div.innerHTML =
+
+icon + " " + layer.name +
+"<br><small>" +
+layer.geometry +
+"</small>";
+
+
+
+    div.addEventListener("click",function(){
+
+
+
+        let key = layer.id;
+
+
+
+        let mapLayer =
+        GIS_LAYERS[key];
+
+
+
+        if(mapLayer){
+
+
+
+            // روشن کردن لایه
+
+            if(!map.hasLayer(mapLayer)){
+
+                map.addLayer(mapLayer);
+
+            }
+
+
+
+            // زوم به لایه
+
+          if(mapLayer.getBounds){
+
+    map.fitBounds(
+        mapLayer.getBounds()
+    );
+
+}
+else if(LAYER_CONFIG[key].bounds){
+
+
+    map.fitBounds(
+        LAYER_CONFIG[key].bounds
+    );
+
+
+    if(LAYER_CONFIG[key].maxZoom){
+
+        map.setZoom(
+            LAYER_CONFIG[key].maxZoom
+        );
+
+    }
+
+}
+
+
+
+        }
+
+
+
+        results.style.display="none";
+
 
     });
 
 
 
-    selectedDistrict = layer;
-
-
-
-
-    /*
-    Add Arrow Marker
-    */
-
-
-    if(searchMarker){
-
-        map.removeLayer(searchMarker);
-
-    }
-
-
-
-    let center =
-    layer.getBounds().getCenter();
-
-
-
-
-    searchMarker =
-    L.marker(center,{
-
-        icon:L.divIcon({
-
-            className:"search-arrow",
-
-            html:"⬇",
-
-            iconSize:[35,35]
-
-        })
-
-    }).addTo(map);
-
-
-
-
-}
+    results.appendChild(div);
 
 
 
@@ -171,84 +220,21 @@ if(String(pdNumber) === searchValue){
 
 
 
+        results.style.display="block";
 
-if(!found){
 
-alert(
-"District PD_NR "+searchValue+" not found"
-);
 
-}
-
+    });
 
 
 }
-
 
 
 
 document.addEventListener(
-
 "DOMContentLoaded",
-
 function(){
 
-
-
-const button =
-document.getElementById("search-go");
-
-
-const input =
-document.getElementById("search-input");
-
-
-
-
-if(button){
-
-
-button.addEventListener(
-
-"click",
-
-searchDistrict
-
-);
-
-
-}
-
-
-
-
-
-if(input){
-
-
-input.addEventListener(
-
-"keypress",
-
-function(e){
-
-
-if(e.key==="Enter"){
-
-
-searchDistrict();
-
-
-}
-
-
-}
-
-);
-
-
-}
-
-
+    initializeSearch();
 
 });

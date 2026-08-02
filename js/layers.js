@@ -9,68 +9,114 @@
 let GIS_LAYERS = {};
 
 
+function initializeLayers(){
 
-const LAYER_CONFIG = {
+    Object.keys(LAYER_CONFIG).forEach(function(key){
+
+        createLayer(key,LAYER_CONFIG[key]);
+
+    });
+
+}
 
 
-    districts: {
 
-        id: "districts",
+function createLayer(id, config){
 
-        name: "مرز نواحی کابل",
 
-        type: "polygon",
+    // =========================
+    // GeoJSON Layer
+    // =========================
 
-        source:
-        "data/vector/kabuldistrec.geojson"
+    if(config.type === "geojson"){
 
-    },
 
-image1: {
+        GIS_LAYERS[id] = L.geoJSON(null,{
 
-    id: "image1",
+            style:getLayerStyle(id),
 
-    name: "1png",
 
-    type: "raster"
+            onEachFeature:function(feature, layer){
 
-},
-    roads: {
+                onEachFeature(feature, layer, id);
 
-        id: "roads",
+            }
 
-        name: "سرک‌های پلانی کابل",
 
-        type: "line",
+        });
 
-        source:
-        "data/vector/kabulrods.geojson"
+
+
+        fetch(config.source)
+
+        .then(response=>response.json())
+
+        .then(data=>{
+
+            GIS_LAYERS[id].addData(data);
+
+        });
+
+
 
     }
 
 
-};
 
 
+    // =========================
+    // Raster Tile Layer
+    // =========================
+
+    else if(config.type === "tile"){
 
 
+        GIS_LAYERS[id] = L.tileLayer(
 
-function initializeLayers(){
+            config.source,
 
+            {
 
-    Object.keys(LAYER_CONFIG).forEach(function(key){
+                minZoom: config.minZoom,
 
+                maxZoom: config.maxZoom,
 
-        createGeoJSONLayer(
+                opacity: config.opacity,
 
-            key,
+                tms:false
 
-            LAYER_CONFIG[key]
+            }
 
         );
 
 
-    });
+    }
+
+
+
+
+
+    // =========================
+    // GeoServer WMS Layer
+    // =========================
+
+    else if(config.type === "wms"){
+
+
+GIS_LAYERS[id] = L.tileLayer.wms(
+    config.source,
+    {
+        layers: config.layer,
+        format:"image/png",
+        transparent:true,
+        version:"1.1.1",
+        zIndex:500
+    }
+);
+
+
+    }
+
 
 
 }
@@ -79,66 +125,19 @@ function initializeLayers(){
 
 
 
-
-function createGeoJSONLayer(id, config){
-
-
-    GIS_LAYERS[id] = L.geoJSON(null, {
+function getLayerStyle(id){
 
 
-        style:
-
-        getLayerStyle(config.type),
-
-
-        onEachFeature:
-
-        onEachFeature
-
-
-    });
-
-
-
-
-    fetch(config.source)
-
-
-    .then(response => response.json())
-
-
-    .then(data => {
-
-
-        GIS_LAYERS[id].addData(data);
-
-
-    });
-
-
-}
-
-
-
-
-
-
-
-function getLayerStyle(type){
-
-
-    if(type === "polygon"){
+    if(id === "districts"){
 
 
         return {
-
 
             color:"#3388ff",
 
             weight:2,
 
             fillOpacity:0.1
-
 
         };
 
@@ -147,14 +146,13 @@ function getLayerStyle(type){
 
 
 
-
-    if(type === "line"){
+    if(id === "roads"){
 
 
         return {
 
 
-            color:"#ff6600",
+            color:LAYER_CONFIG[id].styleColor,
 
             weight:2
 
@@ -165,31 +163,81 @@ function getLayerStyle(type){
     }
 
 
+
+
+    if(id === "developmentPlan"){
+
+
+        return {
+
+
+            color:"#008000",
+
+            weight:2,
+
+            fillColor:"#00ff00",
+
+            fillOpacity:0.25
+
+
+        };
+
+
+    }
+
+
+
+    return {};
+
+
 }
 
+
+
+
+
+
+
 let selectedLayer = null;
-function onEachFeature(feature, layer){
+
+
+
+
+
+function onEachFeature(feature, layer, layerId){
+
+
+
 
 
     // Mouse Over Highlight
 
-    layer.on("mouseover", function(){
+    layer.on("mouseover",function(){
 
 
         layer.setStyle({
+
 
             weight:3,
 
             fillOpacity:0.3
 
+
         });
+
 
 
     });
 
 
 
-    layer.on("mouseout", function(){
+
+
+
+
+    // Mouse Out
+
+    layer.on("mouseout",function(){
 
 
         if(layer !== selectedLayer){
@@ -197,31 +245,46 @@ function onEachFeature(feature, layer){
 
             layer.setStyle({
 
+
                 weight:2,
 
                 fillOpacity:0.1
 
+
             });
 
 
+
         }
+
 
 
     });
 
 
 
+
+
+
+
+
     // Identify
 
-    layer.on("click", function(){
+    layer.on("click",function(){
+
 
 
         if(identifyActive){
 
 
+
+
+
             if(selectedLayer){
 
+
                 selectedLayer.setStyle({
+
 
                     color:"#3388ff",
 
@@ -229,47 +292,64 @@ function onEachFeature(feature, layer){
 
                     fillOpacity:0.1
 
+
                 });
 
+
+
             }
+
+
+
+
 
 
             selectedLayer = layer;
 
 
+
+
+
+
             layer.setStyle({
+
 
                 color:"red",
 
                 weight:3
 
+
             });
 
 
 
-            let pd = feature.properties.PD_NR;
 
 
-            let html = `
 
-            <b>PD_NR:</b> ${pd}
 
-            `;
+            // ساخت Popup از تنظیمات Layer Config
+
+            let html = createIdentifyContent(feature, layerId);
+
+
+
+
 
 
             layer.bindPopup(html).openPopup();
 
 
+
+
         }
+
 
 
     });
 
 
+
+
+
+
 }
-var planRaster = L.tileLayer('Raster_Data/{z}/{x}/{y}.png', {
-    minZoom: 12,
-    maxZoom: 12,
-    opacity: 0.8,
-    attribution: 'Raster Plan'
-});

@@ -7,7 +7,7 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>GIS Portal</title>
+<title>وزارت شهر سازی ومسکن</title>
 
 
 <!-- CSS -->
@@ -21,6 +21,10 @@
 <link rel="stylesheet" href="css/layerpanel.css">
 
 <link rel="stylesheet" href="css/legend.css">
+
+<link rel="stylesheet" href="css/responsive.css">
+
+<link rel="stylesheet" href="css/search.css">
 
 <link rel="stylesheet" href="css/responsive.css">
 
@@ -131,66 +135,28 @@ Terrain
 
 <aside id="legend-panel">
 
-
 <div class="panel-title">
-
-Legend
-
+    Legend
 </div>
 
-
-
-<div class="legend-content">
-
-<div class="legend-item" id="legend-districts">
-
-<span class="legend-symbol polygon"></span>
-
-<span>
-Boundary
-</span>
-
+<div class="legend-content" id="legend-list">
 </div>
-
-
-<div class="legend-item" id="legend-roads">
-
-<span class="legend-symbol line"></span>
-
-<span>
-Roads
-</span>
-
-</div>
-
-
-<div class="legend-item" id="legend-raster">
-
-<span class="legend-symbol raster"></span>
-
-<span>
-پلان موقعیت
-</span>
-
-</div>
-
 
 </aside>
 
 
-
 <div id="search-panel">
 
-    <input 
-    type="text" 
+    <input
+    type="text"
     id="search-input"
-    placeholder="Search District...">
-
+    placeholder="جستجوی لایه...">
 
     <button id="search-go">
         🔍
     </button>
 
+    <div id="search-results"></div>
 
 </div>
 
@@ -268,6 +234,8 @@ Layers
 
 
 <script src="js/config.js"></script>
+
+<script src="js/layerConfig.js"></script>
 
 <script src="js/layers.js"></script>
 

@@ -82,4 +82,26 @@ function changeBasemap(name){
     currentBasemap.addTo(map);
 
 
+
+    // Bring GIS layers above basemap
+
+    Object.keys(GIS_LAYERS).forEach(function(id){
+
+
+        if(map.hasLayer(GIS_LAYERS[id])){
+
+
+            if(GIS_LAYERS[id].bringToFront){
+
+                GIS_LAYERS[id].bringToFront();
+
+            }
+
+
+        }
+
+
+    });
+
+
 }

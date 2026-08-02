@@ -12,33 +12,29 @@ function initializeLayerControl(){
     let layerPanel = 
     document.getElementById("layer-list");
 
+let layerList = [];
 
+Object.keys(LAYER_CONFIG)
 
-let layerList = [
+.sort(function(a,b){
 
-    {
-        name:"پلان موقعیت",
-        id:"raster",
-        layer:rasterLayers.image1
-    },
+    return LAYER_CONFIG[a].order - LAYER_CONFIG[b].order;
 
-    {
-        name:"مرز نواحی کابل",
-        id:"districts",
-        layer:GIS_LAYERS.districts
-    },
+})
 
-    {
-        name:"سرک های پلانی کابل",
-        id:"roads",
-        layer:GIS_LAYERS.roads
-    }
+.forEach(function(key){
 
-];
+    layerList.push({
 
+        name:LAYER_CONFIG[key].name,
 
+        id:LAYER_CONFIG[key].id,
 
+        layer:GIS_LAYERS[key]
 
+    });
+
+});
 
     layerList.forEach(function(item){
 
@@ -52,15 +48,75 @@ let layerList = [
         div.className =
         "layer-item";
 
-        div.innerHTML = `
+div.innerHTML = `
+
+<div class="layer-header">
+
 
 <label class="layer-row">
 
 <input type="checkbox" checked>
 
-<span>${item.name}</span>
+<span>
+
+${
+
+LAYER_CONFIG[item.id].geometry === "polygon"
+?
+"⬛"
+
+:
+
+LAYER_CONFIG[item.id].geometry === "line"
+?
+"➖"
+
+:
+
+"🖼"
+
+}
+
+${item.name}
+
+</span>
 
 </label>
+
+
+<div class="layer-actions">
+
+<button class="zoom-layer">
+🔍
+</button>
+
+
+<button class="layer-expand">
+▼
+</button>
+
+</div>
+
+
+</div>
+
+
+<div class="layer-details">
+
+
+<div class="layer-info">
+
+Type: ${LAYER_CONFIG[item.id].geometry}
+
+</div>
+
+
+<div class="opacity-label">
+
+Opacity
+
+</div>
+
 
 <input
 type="range"
@@ -68,6 +124,9 @@ class="opacity-slider"
 min="0"
 max="100"
 value="100">
+
+
+</div>
 
 `;
 
@@ -165,7 +224,92 @@ slider.addEventListener("input", function(){
 
 });
 
+let zoomBtn =
+div.querySelector(".zoom-layer");
 
+
+zoomBtn.addEventListener("click",function(e){
+
+    e.stopPropagation();
+
+
+    let config = LAYER_CONFIG[item.id];
+
+
+    // GeoJSON Layer
+    if(layer.getBounds){
+
+        map.fitBounds(
+            layer.getBounds()
+        );
+
+    }
+
+
+    // WMS Layer
+    else if(config.type === "wms" && config.bounds){
+
+
+        map.fitBounds([
+            [config.bounds[1], config.bounds[0]],
+            [config.bounds[3], config.bounds[2]]
+        ]);
+
+
+    }
+
+
+    // Other layers
+    else if(config.bounds){
+
+
+        map.fitBounds(
+            config.bounds
+        );
+
+
+        if(config.maxZoom){
+
+            map.setZoom(config.maxZoom);
+
+        }
+
+
+    }
+
+
+});
+
+let expandBtn =
+div.querySelector(".layer-expand");
+
+
+let details =
+div.querySelector(".layer-details");
+
+
+expandBtn.addEventListener("click",function(){
+
+    if(details.style.display==="none"){
+
+        details.style.display="block";
+
+        this.innerHTML="▲";
+
+    }
+
+    else{
+
+        details.style.display="none";
+
+        this.innerHTML="▼";
+
+    }
+
+});
+
+
+details.style.display="none";
 
         layerPanel.appendChild(div);
 
@@ -178,7 +322,11 @@ slider.addEventListener("input", function(){
         */
 
 
-        layer.addTo(map);
+        if(LAYER_CONFIG[item.id].visible){
+
+    layer.addTo(map);
+
+}
 
 
 

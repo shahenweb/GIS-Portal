@@ -21,11 +21,6 @@ function initializeMap() {
 // Basemap
 initializeBasemaps();
 basemapLayers.osm.addTo(map);
-rasterLayers.image1.addTo(map);
-
-// Raster Plan
-planRaster.addTo(map);
-
 
 // Scale Bar
 
@@ -54,17 +49,24 @@ map.on("mousemove", function(e){
 });
     // GIS Layers
     initializeLayers();
+    // WMS Identify Click
+map.on("click", function(e){
+
+    if(typeof mapClickIdentify === "function"){
+
+        mapClickIdentify(e);
+
+    }
+
+});
 
     // Wait until GeoJSON is loaded
-    setTimeout(function () {
+setTimeout(function () {
 
-        GIS_LAYERS.districts.addTo(map);
-        GIS_LAYERS.roads.addTo(map);
+    initializeLayerControl();
+    initializeLegend();
 
-        initializeLayerControl();
-        initializeLegend();
-
-    }, 500);
+}, 500);
 
 }
 

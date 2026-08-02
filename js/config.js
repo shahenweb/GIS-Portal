@@ -18,7 +18,7 @@ const GIS_CONFIG = {
         ],
 
 
-        zoom: 12
+        zoom: 10
 
 
     },
